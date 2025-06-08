@@ -1,6 +1,9 @@
 package com.pramodvaddiraju.jobpulse.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
@@ -12,8 +15,12 @@ public class JobApplication {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Company name must not be blank")
     private String companyName;
+    @NotBlank(message = "Job title is required")
+    @Size(min = 3, message = "Job title must be at-least 3 characters")
     private String jobTitle;
+    @NotBlank(message = "Status is required")
     private String status;
     private LocalDate appliedDate;
 

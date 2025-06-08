@@ -3,6 +3,7 @@ package com.pramodvaddiraju.jobpulse.controller;
 import com.pramodvaddiraju.jobpulse.entity.JobApplication;
 import com.pramodvaddiraju.jobpulse.service.JobApplicationService;
 import com.pramodvaddiraju.jobpulse.service.JobApplicationServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,13 +34,13 @@ public class JobApplicationController {
 
     // Post/Create
     @PostMapping
-    public ResponseEntity<JobApplication> create(@RequestBody JobApplication job) {
+    public ResponseEntity<JobApplication> create(@RequestBody @Valid JobApplication job) {
         return ResponseEntity.ok(jobApplicationService.createJob(job)); // Return saved job with 200 OK
     }
 
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<JobApplication> update(@PathVariable Long id, @RequestBody JobApplication job){
+    public ResponseEntity<JobApplication> update(@PathVariable Long id, @RequestBody @Valid JobApplication job){
         JobApplication updated = jobApplicationService.updateJob(id,job);
         return (updated != null)? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
