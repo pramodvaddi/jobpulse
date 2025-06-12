@@ -5,6 +5,10 @@ import com.pramodvaddiraju.jobpulse.dto.JobApplicationResponseDTO;
 import com.pramodvaddiraju.jobpulse.entity.JobApplication;
 import com.pramodvaddiraju.jobpulse.mapper.JobMapper;
 import com.pramodvaddiraju.jobpulse.service.JobApplicationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,4 +73,25 @@ public class JobApplicationController {
         service.deleteJob(id);
         return ResponseEntity.noContent().build();
     }
+
+    // Pagination
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<JobApplicationResponseDTO>> getJobsPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id,asc") String[] sort) {
+
+        // Extract sort field and direction
+        String sortField = sort[0];
+        Sort.Direction direction = sort[1].equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+
+        Page<JobApplication> jobPage = service.getJobsPage(pageable);
+
+        Page<JobApplicationResponseDTO> dtoPage = jobPage.map(mapper::toResponse);
+
+        return ResponseEntity.ok(dtoPage);
+    }
+
 }

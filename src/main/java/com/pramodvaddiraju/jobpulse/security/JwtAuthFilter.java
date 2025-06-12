@@ -32,22 +32,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Step 1: Read the Authorization header
-        String authHeader = request.getHeader("Authorization");
+        // ✅ STEP 0: Bypass token checks for public auth endpoints
+        if (request.getServletPath().startsWith("/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
+        // ✅ STEP 1: Read Authorization header
+        String authHeader = request.getHeader("Authorization");
         String token = null;
         String userEmail = null;
 
-        // Step 2: Extract token and email
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7); // remove "Bearer "
+            token = authHeader.substring(7); // Remove Bearer prefix
             userEmail = jwtUtil.getEmailFromToken(token);
         }
 
-        // Step 3: Validate token and set authentication
+        // ✅ STEP 2: Validate token & set auth
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtUtil.isTokenValid(token)) {
-                // Token is valid, set authentication manually
                 var user = userRepository.findByEmail(userEmail).get();
 
                 UsernamePasswordAuthenticationToken authToken =
@@ -55,16 +58,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                 user.getEmail(),
                                 null,
                                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
-                        ); // No roles yet
+                        );
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                // Set authenticated user in the context
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
-        // Step 4: Continue filter chain
+        // ✅ STEP 3: Continue request
         filterChain.doFilter(request, response);
     }
+
 }

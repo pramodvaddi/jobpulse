@@ -4,6 +4,8 @@ import com.pramodvaddiraju.jobpulse.entity.JobApplication;
 import com.pramodvaddiraju.jobpulse.exception.ResourceNotFoundException;
 import com.pramodvaddiraju.jobpulse.repository.JobApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,4 +52,10 @@ public class JobApplicationServiceImpl implements JobApplicationService{
         JobApplication job = jobApplicationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Job with this id not found to delete" + id));
         jobApplicationRepository.delete(job);
     }
+
+    @Override
+    public Page<JobApplication> getJobsPage(Pageable pageable) {
+        return jobApplicationRepository.findAll(pageable);
+    }
+
 }

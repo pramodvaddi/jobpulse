@@ -40,9 +40,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // Public
-                        .requestMatchers("/api/jobs/**").hasRole("USER") // Requires USER role
-                        .anyRequest().authenticated() // All other requests must be authenticated
+                        .requestMatchers("/auth/**").permitAll()         // <- allow register/login
+                        .requestMatchers("/api/jobs/**").hasRole("USER") // <- only allow ROLE_USER here
+                        .anyRequest().authenticated()                    // <- all else must be authenticated
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
