@@ -38,7 +38,7 @@ public class JobApplicationServiceImpl implements JobApplicationService{
         JobApplication existing = jobApplicationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Job with ID " + id + " not found"));
 
-        existing.setCompanyName(job.getCompanyName());
+        existing.setCompany(job.getCompany());
         existing.setJobTitle(job.getJobTitle());
         existing.setStatus(job.getStatus());
         existing.setAppliedDate(job.getAppliedDate());

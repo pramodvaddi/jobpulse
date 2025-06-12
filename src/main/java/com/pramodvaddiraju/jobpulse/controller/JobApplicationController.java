@@ -1,59 +1,72 @@
 package com.pramodvaddiraju.jobpulse.controller;
 
+import com.pramodvaddiraju.jobpulse.dto.JobApplicationRequestDTO;
+import com.pramodvaddiraju.jobpulse.dto.JobApplicationResponseDTO;
 import com.pramodvaddiraju.jobpulse.entity.JobApplication;
+import com.pramodvaddiraju.jobpulse.mapper.JobMapper;
 import com.pramodvaddiraju.jobpulse.service.JobApplicationService;
-import com.pramodvaddiraju.jobpulse.service.JobApplicationServiceImpl;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/jobs")
 public class JobApplicationController {
 
-    private JobApplicationService jobApplicationService;
+    private final JobApplicationService service;
+    private final JobMapper mapper;
 
-    public JobApplicationController(JobApplicationService jobApplicationService){
-        this.jobApplicationService = jobApplicationService;
+    public JobApplicationController(JobApplicationService service, JobMapper mapper) {
+        this.service = service;
+        this.mapper = mapper;
     }
 
-    // Get all
-    @GetMapping
-    public ResponseEntity<List<JobApplication>> getAll(){
-        return ResponseEntity.ok(jobApplicationService.getAllJobs());
-    }
-
-    // Get by id
-    @GetMapping("/{id}")
-    public ResponseEntity<JobApplication> getById(@PathVariable Long id){
-        JobApplication job = jobApplicationService.getJobById(id);
-        return (job!= null)? ResponseEntity.ok(job) : ResponseEntity.notFound().build();
-    }
-
-    // Post/Create
+    // CREATE
     @PostMapping
-    public ResponseEntity<JobApplication> create(@RequestBody @Valid JobApplication job) {
-        return ResponseEntity.ok(jobApplicationService.createJob(job)); // Return saved job with 200 OK
+    public ResponseEntity<JobApplicationResponseDTO> create(@RequestBody JobApplicationRequestDTO requestDTO) {
+        JobApplication jobEntity = mapper.toEntity(requestDTO);
+        JobApplication savedJob = service.createJob(jobEntity);
+        JobApplicationResponseDTO responseDTO = mapper.toResponse(savedJob);
+        return ResponseEntity.ok(responseDTO);
     }
 
-    // Update
+    // GET BY ID
+    @GetMapping("/{id}")
+    public ResponseEntity<JobApplicationResponseDTO> getById(@PathVariable Long id) {
+        JobApplication job = service.getJobById(id);
+        if (job == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(mapper.toResponse(job));
+    }
+
+    // GET ALL
+    @GetMapping
+    public ResponseEntity<List<JobApplicationResponseDTO>> getAll() {
+        List<JobApplication> jobs = service.getAllJobs();
+        List<JobApplicationResponseDTO> responseList = jobs.stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responseList);
+    }
+
+    // UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<JobApplication> update(@PathVariable Long id, @RequestBody @Valid JobApplication job){
-        JobApplication updated = jobApplicationService.updateJob(id,job);
-        return (updated != null)? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
+    public ResponseEntity<JobApplicationResponseDTO> update(@PathVariable Long id, @RequestBody JobApplicationRequestDTO requestDTO) {
+        JobApplication updatedEntity = mapper.toEntity(requestDTO);
+        JobApplication updatedJob = service.updateJob(id, updatedEntity);
+        if (updatedJob == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(mapper.toResponse(updatedJob));
     }
 
+    // DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<JobApplication> delete(@PathVariable Long id){
-        jobApplicationService.deleteJob(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.deleteJob(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
-
-
 }
