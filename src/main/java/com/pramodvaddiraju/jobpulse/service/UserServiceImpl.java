@@ -3,6 +3,7 @@ package com.pramodvaddiraju.jobpulse.service;
 import com.pramodvaddiraju.jobpulse.dto.AuthRequest;
 import com.pramodvaddiraju.jobpulse.dto.AuthResponse;
 import com.pramodvaddiraju.jobpulse.entity.User;
+import com.pramodvaddiraju.jobpulse.enums.Role;
 import com.pramodvaddiraju.jobpulse.exception.ResourceNotFoundException;
 import com.pramodvaddiraju.jobpulse.repository.UserRepository;
 import com.pramodvaddiraju.jobpulse.security.JwtUtil;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
         User newUser = new User();
         newUser.setEmail(request.getEmail());
         newUser.setPassword(encodedPassword);
-        newUser.setRole("USER");
+        newUser.setRole(Role.USER);
 
         userRepository.save(newUser);
     }

@@ -1,5 +1,6 @@
 package com.pramodvaddiraju.jobpulse.entity;
 
+import com.pramodvaddiraju.jobpulse.enums.Role;
 import jakarta.persistence.*;
 
 // JPA annotation to mark this as a database entity
@@ -21,8 +22,9 @@ public class User {
     private String password;
 
     // e.g., "USER", "ADMIN" — used for authorization
-    @Column(nullable = false)
-    private String role;
+   // @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
 
     // Constructors
@@ -32,7 +34,7 @@ public class User {
     }
 
     // No Args constructor
-    public User(String email, String password, String role) {
+    public User(String email, String password, Role role) {
         this.email = email;
         this.password = password;
         this.role = role;
@@ -63,11 +65,11 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 

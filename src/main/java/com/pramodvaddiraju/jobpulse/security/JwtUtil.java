@@ -23,7 +23,7 @@ public class JwtUtil {
     public String generateToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail()) // Unique identity
-                .claim("role", user.getRole()) // Add custom claim
+                .claim("role", user.getRole().name()) // Add custom claim
                 .setIssuedAt(new Date()) // Token creation time
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime)) // Token expiry
                 .signWith(getKey()) // Sign with secret key
