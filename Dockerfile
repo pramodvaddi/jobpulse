@@ -1,13 +1,11 @@
-# 1️⃣ Base image: lightweight Linux with Java 17
+# Use Java 24 runtime
 FROM eclipse-temurin:24-jdk
 
-
-
-# 2️⃣ Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# 3️⃣ Copy the built JAR from your machine into the container
+# Copy built JAR to container
 COPY target/jobpulse-0.0.1-SNAPSHOT.jar app.jar
 
-# 4️⃣ Command to run your Spring Boot app
+# Run Spring Boot JAR
 ENTRYPOINT ["java", "-jar", "app.jar"]
