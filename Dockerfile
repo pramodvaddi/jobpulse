@@ -1,11 +1,17 @@
-# Use Java 24 runtime
-FROM eclipse-temurin:24-jdk
+# ===== Stage 1: Build the JAR using Maven =====
+FROM eclipse-temurin:24-jdk as builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy built JAR to container
-COPY target/jobpulse-0.0.1-SNAPSHOT.jar app.jar
+COPY . .
 
-# Run Spring Boot JAR
+RUN ./mvnw clean package -DskipTests
+
+# ===== Stage 2: Run the app =====
+FROM eclipse-temurin:24-jdk
+
+WORKDIR /app
+
+COPY --from=builder /app/target/jobpulse-0.0.1-SNAPSHOT.jar app.jar
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
